@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Minha Galeria</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        #sidebar { width: 150px; background-color: #f2f2f2; padding: 15px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); overflow-y: auto; flex-shrink: 0; }
+        #sidebar h2 { margin-top: 0; font-size: 16px; }
+        #sidebar ul { list-style: none; padding: 0; }
+        #sidebar ul li { padding: 8px 10px; cursor: pointer; border-radius: 4px; font-size: 16px; }
+        /* ... outros estilos ... */
+
+#sidebar ul li { 
+    padding: 8px 10px; 
+    cursor: pointer; 
+    border-radius: 4px; 
+    font-size: 14px; 
+}
+
+/* --- ADICIONE ESTE BLOCO ABAIXO --- */
+#sidebar .category {
+    font-weight: bold; /* Deixa a fonte em negrito */
+    color: #333;      /* Deixa o texto um pouco mais escuro */
+    margin-top: 10px;  /* Adiciona um espaço extra ACIMA de cada categoria */
+    cursor: default;   /* Mostra o cursor normal, já que a categoria não é clicável */
+}
+
+/* Regra para o primeiro item de categoria não ter o espaço extra em cima */
+#sidebar .category:first-child {
+    margin-top: 0;
+}
+/* ----------------------------------- */
+
+#sidebar .subcategory { 
+    padding-left: 20px; 
+    font-size: 13px; 
+}
+
+/* ... resto dos estilos ... */
+        #sidebar .subcategory { padding-left: 20px; font-size: 14px; }
+        #sidebar .active { background-color: #0078ae; color: white; }
+        #main-content { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
+        #gallery-title { margin-top: 0; font-size: 18px; }
+        .search-container { margin-bottom: 20px; }
+        #search-bar { width: 100%; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        #gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; }
+        .component-card { border: 1px solid #ddd; border-radius: 4px; padding: 10px; text-align: center; background-color: #f9f9f9; cursor: pointer; transition: background-color 0.2s; }
+        .component-card:hover { background-color: #e9e9e9; border-color: #999; }
+        .component-card img { width: 100%; height: 90px; object-fit: contain; margin-bottom: 8px; }
+        .component-card p { margin: 0; font-size: 12px; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h2>Categorias</h2>
+        <ul id="category-menu"></ul>
+    </div>
+
+    <div id="main-content">
+        <h1 id="gallery-title"></h1>
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Buscar componente...">
+        </div>
+        <div id="gallery-container"></div>
+    </div>
+
+    <script>
+        let fullComponentData = {};
+        let currentSubcategoryComponents = [];
+
+        function initializeGallery(data) {
+            fullComponentData = data;
+            const menu = document.getElementById('category-menu');
+            menu.innerHTML = ''; // Esta linha agora deve funcionar!
+
+            let allComponents = [];
+            for (const category in data) {
+                const categoryItem = document.createElement('li');
+                categoryItem.textContent = category;
+                categoryItem.className = 'category';
+                menu.appendChild(categoryItem);
+                
+                const subcategoryList = document.createElement('ul');
+                for (const subcategory in data[category]) {
+                    allComponents = allComponents.concat(data[category][subcategory]);
+
+                    const subcategoryItem = document.createElement('li');
+                    subcategoryItem.textContent = subcategory;
+                    subcategoryItem.className = 'subcategory';
+                    subcategoryItem.onclick = function(event) {
+                        displaySubcategory(category, subcategory);
+                        document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
+                        event.currentTarget.classList.add('active');
+                    };
+                    subcategoryList.appendChild(subcategoryItem);
+                }
+                menu.appendChild(subcategoryList);
+            }
+
+            document.getElementById('gallery-title').textContent = 'Todos os Componentes';
+            currentSubcategoryComponents = allComponents;
+            renderComponents(allComponents);
+
+            document.getElementById('search-bar').addEventListener('keyup', function(event) {
+                const searchTerm = event.target.value.toLowerCase();
+                const filteredComponents = currentSubcategoryComponents.filter(component => {
+                    return component.name.toLowerCase().includes(searchTerm);
+                });
+                renderComponents(filteredComponents);
+            });
+        }
+
+        function displaySubcategory(category, subcategory) {
+            document.getElementById('gallery-title').textContent = `${category} > ${subcategory}`;
+            document.getElementById('search-bar').value = '';
+            currentSubcategoryComponents = fullComponentData[category][subcategory];
+            renderComponents(currentSubcategoryComponents);
+        }
+        
+        function renderComponents(components) {
+            const container = document.getElementById('gallery-container');
+            container.innerHTML = '';
+            components.forEach(component => {
+                const card = document.createElement('div');
+                card.className = 'component-card';
+                card.onclick = () => sketchup.insert_component(component.skp_path);
+                const img = document.createElement('img');
+                img.src = component.thumbnail_path;
+                const name = document.createElement('p');
+                name.textContent = component.name;
+                card.appendChild(img);
+                card.appendChild(name);
+                container.appendChild(card);
+            });
+        }
+
+        window.onload = () => sketchup.on_dialog_ready();
+    </script>
+</body>
+</html>

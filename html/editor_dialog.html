@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Editor de Atributos</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 15px; font-size: 14px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { display: block; width: 100%; padding: 10px; font-size: 16px; background-color: #0078ae; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #005f8a; }
+    </style>
+</head>
+<body>
+    <div id="editor-form"></div>
+    <br>
+    <button id="apply-button">Aplicar Mudanças</button>
+
+    <script>
+        // --- ESTE É O JAVASCRIPT CORRETO E ATUALIZADO ---
+
+        // Função que sabe ler a "ficha completa" (uma lista de objetos)
+        function initializeEditor(attributesList) {
+            const form = document.getElementById('editor-form');
+            form.innerHTML = '';
+
+            // Itera sobre cada "ficha" na lista
+            attributesList.forEach(attribute => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+
+                const label = document.createElement('label');
+                // Usa o nome amigável para o texto do label
+                label.textContent = attribute.friendly_name;
+                group.appendChild(label);
+
+                const input = document.createElement('input');
+                input.type = 'text';
+                // O ID do input agora guarda o nome de sistema
+                input.id = attribute.system_name;
+                // O valor do input é a propriedade "value" da ficha
+                input.value = attribute.value;
+                group.appendChild(input);
+
+                form.appendChild(group);
+            });
+        }
+
+        document.getElementById('apply-button').onclick = function() {
+            const updatedAttributes = {};
+            const inputs = document.querySelectorAll('#editor-form input');
+
+            inputs.forEach(input => {
+                const key = input.id; // O ID já é o nome de sistema
+                updatedAttributes[key] = input.value;
+            });
+
+            // Envia os atributos com os nomes de sistema corretos de volta para o Ruby
+            sketchup.apply_changes(updatedAttributes);
+        };
+
+        window.onload = () => sketchup.on_editor_ready();
+    </script>
+</body>
+</html>
