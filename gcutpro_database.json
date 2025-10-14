@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Tampo2",
+    "category": "Cozinha",
+    "subcategory": "Tampos",
+    "url_skp": "https://github.com/Gibeo-Prod/GcutPro-Plugin/releases/download/v1.0.0/Tampo2.skp",
+    "filename_skp": "Tampo2.skp",
+    "url_thumb": "https://github.com/Gibeo-Prod/GcutPro-Plugin/releases/download/v1.0.0/Tampo2.png",
+    "filename_thumb": "Tampo2.png"
+  },
+  {
+    "name": "Caixa",
+    "category": "Cozinha",
+    "subcategory": "Inferiores",
+    "url_skp": "https://github.com/Gibeo-Prod/GcutPro-Plugin/releases/download/v1.0.0/caixa.skp",
+    "filename_skp": "caixa.skp",
+    "url_thumb": "https://github.com/Gibeo-Prod/GcutPro-Plugin/releases/download/v1.0.0/caixa.png",
+    "filename_thumb": "caixa.png"
+  }
+]
